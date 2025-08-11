@@ -1,13 +1,37 @@
+import { useState } from 'react';
+import axios from 'axios';
 
-export default function UsuariosForm(){
+function UsuariosForm({ onUsuarioAdicionado }) {
+    const [nomeUsuario, setNomeUsuario] = useState("")
+    const [error, setError] = useState(null)
 
-/* Usar o axios para fazer o post do usuário*/
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!nomeUsuario.trim()) {
+            setError("O nome é obrigatório")
+            return
+        }
+        await axios.post("http://localhost:3000/usuarios", { nome: nomeUsuario });
+        setNomeUsuario("");
+        if (onUsuarioAdicionado) {
+            onUsuarioAdicionado();
+        }
+    }
 
-    return(
+    return (
         <div>
-            <label> Digite o nome do usuário </label>
-            <input type='text' />
-            <button> SALVAR </button>
+            <form onSubmit={handleSubmit}>
+                <label> Digite o nome do usuário: </label>
+                <input
+                    type="text"
+                    value={nomeUsuario}
+                    onChange={(e) => setNomeUsuario(e.target.value)}
+                />
+                <button type="submit">SALVAR</button>
+                {error && <p style={{ color: "red"}}> {error} </p>}
+            </form>
         </div>
-    )
+    );
 }
+
+export default UsuariosForm;
